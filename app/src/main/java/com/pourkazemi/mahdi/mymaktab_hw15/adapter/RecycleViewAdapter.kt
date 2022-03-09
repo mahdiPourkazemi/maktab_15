@@ -7,22 +7,20 @@ import androidx.recyclerview.selection.ItemDetailsLookup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.pourkazemi.mahdi.mymaktab_hw15.databinding.CustomModelBinding
+import com.pourkazemi.mahdi.mymaktab_hw15.databinding.ModelBinding
 import com.pourkazemi.mahdi.mymaktab_hw15.model.City
+import com.pourkazemi.mahdi.mymaktab_hw15.viewmodel.SharedViewModel
 
-class RecycleViewAdapter(val mList:List<City>)
+class RecycleViewAdapter
     :ListAdapter<City, RecycleViewAdapter.MyModelViewHolder>(StringDiffCallback()){
 
-    lateinit var bind:CustomModelBinding
+    lateinit var bind:ModelBinding
 
-    inner class MyModelViewHolder(private var binding:CustomModelBinding):
+    inner class MyModelViewHolder(private var binding:ModelBinding):
         RecyclerView.ViewHolder(bind.root){
         //////////////////////////////////////////
-            fun funBinding(position: Int){
-                binding.textField.setOnClickListener {
-
-                }
-                binding.tv.setText(mList[position].name)
+            fun funBinding(vm : SharedViewModel){
+                binding.sharedVM=vm
             }
         fun getItem(): ItemDetailsLookup.ItemDetails<Long> =
 
@@ -37,7 +35,7 @@ class RecycleViewAdapter(val mList:List<City>)
             MyModelViewHolder {
         //*val mInflater=LayoutInflater.from(parent.context)
         //val view = CustomModelBinding.bind(parent.rootView)
-        val view=CustomModelBinding.inflate(LayoutInflater.from(parent.context)
+        val view=ModelBinding.inflate(LayoutInflater.from(parent.context)
             ,parent,false)
         return MyModelViewHolder(view)
     }
