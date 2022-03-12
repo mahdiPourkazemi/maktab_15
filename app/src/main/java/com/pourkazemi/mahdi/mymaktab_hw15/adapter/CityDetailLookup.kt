@@ -32,21 +32,19 @@
  * THE SOFTWARE.
  */
 
-package com.raywenderlich.android.bringcookies.adapters
+package com.pourkazemi.mahdi.mymaktab_hw15.adapter
 
-import androidx.recyclerview.selection.ItemKeyProvider
-import com.pourkazemi.mahdi.mymaktab_hw15.adapter.RecycleViewAdapter
+import android.view.MotionEvent
+import androidx.recyclerview.selection.ItemDetailsLookup
+import androidx.recyclerview.widget.RecyclerView
 
-class ItemsKeyProvider(private val adapter: RecycleViewAdapter) : ItemKeyProvider<Long>(SCOPE_CACHED) {
+class CityDetailLookup(private val recyclerView: RecyclerView) : ItemDetailsLookup<Long>() {
 
-
-    override fun getKey(position: Int): Long? {
-        return adapter.mList[position].id
-        //return adapter.getItemId(position)
+  override fun getItemDetails(event: MotionEvent): ItemDetails<Long>? {
+    val view = recyclerView.findChildViewUnder(event.x, event.y)
+    if (view != null) {
+      return (recyclerView.getChildViewHolder(view) as RecycleViewAdapter.MyModelViewHolder).getItem()
     }
-
-    override fun getPosition(key: Long): Int {
-        return adapter.mList.indexOfFirst { it.id==key }
-    }
-
+    return null
+  }
 }

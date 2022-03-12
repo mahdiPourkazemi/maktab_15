@@ -1,27 +1,44 @@
 package com.pourkazemi.mahdi.mymaktab_hw15.adapter
 
-import android.util.Log
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.selection.ItemDetailsLookup
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
+import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.widget.RecyclerView
+import com.pourkazemi.mahdi.mymaktab_hw15.R
 import com.pourkazemi.mahdi.mymaktab_hw15.databinding.ModelBinding
 import com.pourkazemi.mahdi.mymaktab_hw15.model.City
-import com.pourkazemi.mahdi.mymaktab_hw15.viewmodel.SharedViewModel
 
-class RecycleViewAdapter
-    :ListAdapter<City, RecycleViewAdapter.MyModelViewHolder>(StringDiffCallback()){
+class RecycleViewAdapter :
+    RecyclerView.Adapter<RecycleViewAdapter.MyModelViewHolder>() {
 
-    lateinit var bind:ModelBinding
+//private lateinit var bind: ModelBinding
+    var mList: List<City> = emptyList()
+        private set
+    fun setListCity(fList:List<City>){
+        mList=fList
+    }
 
-    inner class MyModelViewHolder(private var binding:ModelBinding):
-        RecyclerView.ViewHolder(bind.root){
+    var tracker: SelectionTracker<Long>? = null
+
+    inner class MyModelViewHolder(private var binding: ModelBinding) :
+        RecyclerView.ViewHolder(binding.root) {
         //////////////////////////////////////////
-            fun funBinding(vm : SharedViewModel){
-                binding.sharedVM=vm
+        fun funBinding(city: City ) {
+            binding.textView.text = city.name
+            binding.textView.isSelected=city.selected
+            tracker?.let {
+                if (it.isSelected(city.id)) {
+                    binding.textView.setBackgroundColor(
+                        ContextCompat.getColor(binding.textView.context, R.color.purple_200))
+                } else {
+                    binding.textView.background = null
+                }
             }
+        }
+
         fun getItem(): ItemDetailsLookup.ItemDetails<Long> =
 
             object : ItemDetailsLookup.ItemDetails<Long>() {
@@ -30,34 +47,28 @@ class RecycleViewAdapter
 
                 override fun getSelectionKey(): Long = mList[bindingAdapterPosition].id
             }
-        }
+
+        fun getViewHolderItemDetails(): ItemDetailsLookup.ItemDetails<Long> =
+            object : ItemDetailsLookup.ItemDetails<Long>() {
+                override fun getPosition(): Int =  bindingAdapterPosition
+                override fun getSelectionKey(): Long = mList[bindingAdapterPosition].id
+            }
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int):
             MyModelViewHolder {
-        //*val mInflater=LayoutInflater.from(parent.context)
-        //val view = CustomModelBinding.bind(parent.rootView)
-        val view=ModelBinding.inflate(LayoutInflater.from(parent.context)
-            ,parent,false)
+        val view = ModelBinding.inflate(
+            LayoutInflater.from(parent.context), parent, false
+        )
         return MyModelViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: MyModelViewHolder,
-                                  onBindPosition: Int) {
-        holder.funBinding(onBindPosition)
+    override fun onBindViewHolder(
+        holder: MyModelViewHolder,
+        onBindPosition: Int
+    ) {
+        holder.funBinding(mList[onBindPosition])
     }
 
-    override fun getItemCount()=mList.size
-
-}
-class StringDiffCallback: DiffUtil.ItemCallback<City>(){
-
-    override fun areItemsTheSame(oldItem: City, newItem: City): Boolean {
-        Log.d("main","$newItem")
-        return oldItem.id==newItem.id
-    }
-
-    override fun areContentsTheSame(oldItem: City, newItem: City): Boolean {
-        Log.d("main","$newItem")
-        return oldItem==newItem
-    }
-
+    override fun getItemCount() = mList.size
 }

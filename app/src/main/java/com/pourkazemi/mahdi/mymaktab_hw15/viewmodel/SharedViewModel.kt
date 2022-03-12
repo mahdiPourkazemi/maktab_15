@@ -10,7 +10,5 @@ class SharedViewModel: ViewModel() {
     private val _city = MutableLiveData<City>()
     val city: LiveData<City> = _city
 
-    init {
-        _city.value= (City(55L,"idds",false))
-    }
+
 }

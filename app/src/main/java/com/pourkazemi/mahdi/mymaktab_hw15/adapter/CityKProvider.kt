@@ -34,17 +34,19 @@
 
 package com.pourkazemi.mahdi.mymaktab_hw15.adapter
 
-import android.view.MotionEvent
-import androidx.recyclerview.selection.ItemDetailsLookup
-import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.selection.ItemKeyProvider
 
-class ItemsDetailsLookup(private val recyclerView: RecyclerView) : ItemDetailsLookup<Long>() {
+class CityKProvider(private val adapter: RecycleViewAdapter) : ItemKeyProvider<Long>(SCOPE_CACHED) {
 
-  override fun getItemDetails(event: MotionEvent): ItemDetails<Long>? {
-    val view = recyclerView.findChildViewUnder(event.x, event.y)
-    if (view != null) {
-      return (recyclerView.getChildViewHolder(view) as RecycleViewAdapter.MyModelViewHolder).getItem()
+
+    override fun getKey(position: Int): Long? {
+        return adapter.getItemId(position)
+        //return adapter.getItemId(position)
     }
-    return null
-  }
+
+    override fun getPosition(key: Long): Int {
+        return adapter.mList.indexOfFirst { it.id==key }
+    }
+
 }
+
