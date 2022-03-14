@@ -6,6 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.recyclerview.selection.ItemDetailsLookup
+import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -13,32 +15,42 @@ import com.pourkazemi.mahdi.mymaktab_hw15.R
 import com.pourkazemi.mahdi.mymaktab_hw15.databinding.ModelBinding
 import com.pourkazemi.mahdi.mymaktab_hw15.model.City
 
-class RecycleViewAdapter(private val callback:(City)->Unit,private val bView:(View)->Unit)
-    : ListAdapter<City, RecycleViewAdapter.MyModelViewHolder>(StringDiffCallback()) {
+class RecycleViewAdapter :
+    ListAdapter<City, RecycleViewAdapter.MyModelViewHolder>(StringDiffCallback()) {
 
-
-    class MyModelViewHolder(private var binding: ModelBinding,private val postion:(Int)->Unit) :
-        RecyclerView.ViewHolder(binding.root) {
-
-        fun funBinding(bCity: City) {
-            postion(bindingAdapterPosition)
-            binding.city = bCity
-            binding.executePendingBindings()
-        }
+    var tracker: SelectionTracker<Long>? = null
+    init {
+        setHasStableIds(true)
     }
 
-    @SuppressLint("ResourceAsColor")
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int):
-            MyModelViewHolder {
-        val view = ModelBinding.inflate(
-            LayoutInflater.from(parent.context), parent, false
-        )
-        return MyModelViewHolder(view){ postion->
-            view.textView.setOnClickListener {
-                callback(getItem(postion))
-               // it.setBackgroundColor(R.color.purple_200)
+
+    class MyModelViewHolder(private var binding: ModelBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+
+        fun funBinding(bCity: City, isActivated: Boolean = false) {
+            binding.city = bCity
+            itemView.isActivated = isActivated
+            binding.executePendingBindings()
+        }
+        fun getItemDetails(): ItemDetailsLookup.ItemDetails<Long> =
+            object : ItemDetailsLookup.ItemDetails<Long>() {
+                override fun getPosition(): Int =bindingAdapterPosition
+                override fun getSelectionKey(): Long = itemId
+            }
+        companion object {
+            fun from(parent: ViewGroup): MyModelViewHolder {
+                val binding = ModelBinding.inflate(
+                    LayoutInflater.from(parent.context), parent, false
+                )
+                return MyModelViewHolder(binding)
             }
         }
+
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int):
+            MyModelViewHolder {
+        return MyModelViewHolder.from(parent)
     }
 
     override fun onBindViewHolder(
@@ -46,9 +58,9 @@ class RecycleViewAdapter(private val callback:(City)->Unit,private val bView:(Vi
         onBindPosition: Int
     ) {
         holder.funBinding(getItem(onBindPosition))
-        bView(holder.itemView)
-       //holder.itemView.setBackgroundColor()
-
+        tracker?.let {
+            holder.funBinding(getItem(onBindPosition), it.isSelected(onBindPosition.toLong()))
+        }
     }
 
 }
