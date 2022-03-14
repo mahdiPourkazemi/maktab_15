@@ -1,6 +1,7 @@
 package com.pourkazemi.mahdi.mymaktab_hw15
 
 import android.annotation.SuppressLint
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -19,7 +20,6 @@ class AvailableFragment : Fragment(R.layout.fragment_available) {
     private lateinit var binding:FragmentAvailableBinding
     private val viewModel: SharedViewModel by activityViewModels()
 
-    @SuppressLint("ResourceAsColor")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?){
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentAvailableBinding.bind(view)
@@ -36,8 +36,8 @@ class AvailableFragment : Fragment(R.layout.fragment_available) {
 
         },{view1->
             mCallback {
-                if (!it.selected) view1.setBackgroundColor(R.color.teal_200)
-                else view1.setBackgroundColor(R.color.white)
+                if (it.selected) view1.setBackgroundColor(Color.parseColor("#FF000000"))
+                else view1.setBackgroundColor(Color.parseColor("#FFFFFFFF"))
             }
 
         })
