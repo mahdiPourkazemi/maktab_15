@@ -7,9 +7,6 @@
         <variable
             name="city"
             type="com.pourkazemi.mahdi.mymaktab_hw15.model.City" />
-        <variable
-            name="viewModel"
-            type="com.pourkazemi.mahdi.mymaktab_hw15.viewmodel.SharedViewModel" />
     </data>
 
         <TextView
@@ -22,7 +19,6 @@
             android:padding="4dp"
             android:textColor="@color/black"
             android:text="@{city.name}"
-            android:onClick="@{()->(viewModel.myOnClick(city))}"
             android:textAlignment="gravity"
             android:textIsSelectable="false"
              />

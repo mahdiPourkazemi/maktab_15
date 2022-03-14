@@ -1,33 +1,44 @@
 package com.pourkazemi.mahdi.mymaktab_hw15.adapter
 
+import android.annotation.SuppressLint
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.pourkazemi.mahdi.mymaktab_hw15.R
 import com.pourkazemi.mahdi.mymaktab_hw15.databinding.ModelBinding
 import com.pourkazemi.mahdi.mymaktab_hw15.model.City
 
-class RecycleViewAdapter
+class RecycleViewAdapter(private val callback:(City)->Unit,private val bView:(View)->Unit)
     : ListAdapter<City, RecycleViewAdapter.MyModelViewHolder>(StringDiffCallback()) {
 
 
-    inner class MyModelViewHolder(private var binding: ModelBinding) :
+    class MyModelViewHolder(private var binding: ModelBinding,private val postion:(Int)->Unit) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun funBinding(bCity: City) {
+            postion(bindingAdapterPosition)
             binding.city = bCity
             binding.executePendingBindings()
         }
     }
 
+    @SuppressLint("ResourceAsColor")
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int):
             MyModelViewHolder {
         val view = ModelBinding.inflate(
             LayoutInflater.from(parent.context), parent, false
         )
-        return MyModelViewHolder(view)
+        return MyModelViewHolder(view){ postion->
+            view.textView.setOnClickListener {
+                callback(getItem(postion))
+               // it.setBackgroundColor(R.color.purple_200)
+            }
+        }
     }
 
     override fun onBindViewHolder(
@@ -35,6 +46,9 @@ class RecycleViewAdapter
         onBindPosition: Int
     ) {
         holder.funBinding(getItem(onBindPosition))
+        bView(holder.itemView)
+       //holder.itemView.setBackgroundColor()
+
     }
 
 }
