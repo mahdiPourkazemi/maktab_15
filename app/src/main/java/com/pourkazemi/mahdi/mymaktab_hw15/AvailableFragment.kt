@@ -30,31 +30,34 @@ class AvailableFragment : Fragment(R.layout.fragment_available) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentAvailableBinding.bind(view)
 
-        fun mCallback( mView:(City)->Unit){
+/*        fun mCallback( mView:(City)->Unit){
            viewModel.city.observe(viewLifecycleOwner, Observer {
                it.map { mView(it) }
 
            })
-        }
+        }*/
         val adapter = RecycleViewAdapter()
+
+
+
+       val layoutManager=
+            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+        binding.availableRecycle.layoutManager=layoutManager
+        binding.availableRecycle.adapter=adapter
+
 
 
         tracker = SelectionTracker.Builder<Long>(
             "mySelection",
-            adapter,
-            StableIdKeyProvider(adapter),
-            MyItemDetailsLookup(adapter),
+            binding.availableRecycle,
+            StableIdKeyProvider(binding.availableRecycle),
+            MyItemDetailsLookup(binding.availableRecycle),
             StorageStrategy.createLongStorage()
         ).withSelectionPredicate(
             SelectionPredicates.createSelectAnything()
         ).build()
 
         adapter.tracker = tracker
-       val layoutManager=
-            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-        binding.availableRecycle.layoutManager=layoutManager
-        binding.availableRecycle.adapter=adapter
-
         viewModel.city.observe(viewLifecycleOwner, Observer {
             it?.let {
                 adapter.submitList(it)
